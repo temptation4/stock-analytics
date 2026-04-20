@@ -70,14 +70,15 @@ mvn spring-boot:run
 ### 3. Open Dashboard
 
 ```
-http://localhost:8080
+Application: http://localhost:8070
+Grafana: http://localhost:3000
 ```
 
 ### Optional: Kafka UI
 
 View topics, consumer groups, and messages at:
 ```
-http://localhost:8090
+http://localhost:8085
 ```
 
 ## REST API
@@ -88,6 +89,20 @@ http://localhost:8090
 | `GET /api/stocks/{symbol}/latest` | Raw latest tick |
 | `GET /api/stocks/{symbol}/candles?limit=30` | OHLCV candles from state store |
 | `GET /api/stocks/{symbol}/moving-avg` | 5-minute moving average |
+
+## Dashboard Screenshots
+
+### Grafana Overview
+
+![Grafana overview](images/grafana-overview.png)
+
+### Symbol Panels and Gauges
+
+![Grafana panels](images/grafana-panels.png)
+
+### Summary Table
+
+![Grafana summary table](images/grafana-summary-table.png)
 
 ## Architecture Flow
 

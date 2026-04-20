@@ -1,0 +1,346 @@
+{
+  "title": "Kafka Streams — Stock Analytics",
+  "uid": "kafka-stocks",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Live Stock Prices",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "stock_price",
+          "legendFormat": "{{symbol}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "lineWidth": 2, "fillOpacity": 5 },
+          "unit": "currencyUSD"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "AAPL" }, "properties": [{ "id": "displayName", "value": "Apple" }] },
+          { "matcher": { "id": "byName", "options": "AMZN" }, "properties": [{ "id": "displayName", "value": "Amazon" }] },
+          { "matcher": { "id": "byName", "options": "BTC" }, "properties": [{ "id": "displayName", "value": "Bitcoin" }] },
+          { "matcher": { "id": "byName", "options": "ETH" }, "properties": [{ "id": "displayName", "value": "Ethereum" }] },
+          { "matcher": { "id": "byName", "options": "GOOGL" }, "properties": [{ "id": "displayName", "value": "Alphabet" }] },
+          { "matcher": { "id": "byName", "options": "META" }, "properties": [{ "id": "displayName", "value": "Meta" }] },
+          { "matcher": { "id": "byName", "options": "MSFT" }, "properties": [{ "id": "displayName", "value": "Microsoft" }] },
+          { "matcher": { "id": "byName", "options": "NFLX" }, "properties": [{ "id": "displayName", "value": "Netflix" }] },
+          { "matcher": { "id": "byName", "options": "NVDA" }, "properties": [{ "id": "displayName", "value": "NVIDIA" }] },
+          { "matcher": { "id": "byName", "options": "TSLA" }, "properties": [{ "id": "displayName", "value": "Tesla" }] }
+        ]
+      },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "right", "calcs": ["last", "min", "max"] }
+      }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "% Change from Day Open",
+      "gridPos": { "x": 0, "y": 8, "w": 14, "h": 7 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "stock_change_percent",
+          "legendFormat": "{{symbol}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": { "lineWidth": 2 },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 0 }
+            ]
+          }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "AAPL" }, "properties": [{ "id": "displayName", "value": "Apple" }] },
+          { "matcher": { "id": "byName", "options": "AMZN" }, "properties": [{ "id": "displayName", "value": "Amazon" }] },
+          { "matcher": { "id": "byName", "options": "BTC" }, "properties": [{ "id": "displayName", "value": "Bitcoin" }] },
+          { "matcher": { "id": "byName", "options": "ETH" }, "properties": [{ "id": "displayName", "value": "Ethereum" }] },
+          { "matcher": { "id": "byName", "options": "GOOGL" }, "properties": [{ "id": "displayName", "value": "Alphabet" }] },
+          { "matcher": { "id": "byName", "options": "META" }, "properties": [{ "id": "displayName", "value": "Meta" }] },
+          { "matcher": { "id": "byName", "options": "MSFT" }, "properties": [{ "id": "displayName", "value": "Microsoft" }] },
+          { "matcher": { "id": "byName", "options": "NFLX" }, "properties": [{ "id": "displayName", "value": "Netflix" }] },
+          { "matcher": { "id": "byName", "options": "NVDA" }, "properties": [{ "id": "displayName", "value": "NVIDIA" }] },
+          { "matcher": { "id": "byName", "options": "TSLA" }, "properties": [{ "id": "displayName", "value": "Tesla" }] }
+        ]
+      },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "list", "placement": "bottom" }
+      }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "5-Minute Moving Average",
+      "gridPos": { "x": 14, "y": 8, "w": 10, "h": 7 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "stock_moving_avg_5min{symbol=~\"AAPL|MSFT|GOOGL|TSLA\"}",
+          "legendFormat": "MA — {{symbol}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "custom": { "lineWidth": 1, "lineStyle": { "fill": "dash" } }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "MA — AAPL" }, "properties": [{ "id": "displayName", "value": "Moving Average - Apple" }] },
+          { "matcher": { "id": "byName", "options": "MA — GOOGL" }, "properties": [{ "id": "displayName", "value": "Moving Average - Alphabet" }] },
+          { "matcher": { "id": "byName", "options": "MA — MSFT" }, "properties": [{ "id": "displayName", "value": "Moving Average - Microsoft" }] },
+          { "matcher": { "id": "byName", "options": "MA — TSLA" }, "properties": [{ "id": "displayName", "value": "Moving Average - Tesla" }] }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "type": "bargauge",
+      "title": "Current Prices — All Symbols",
+      "gridPos": { "x": 0, "y": 15, "w": 12, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "stock_price",
+          "legendFormat": "{{symbol}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "AAPL" }, "properties": [{ "id": "displayName", "value": "Apple" }] },
+          { "matcher": { "id": "byName", "options": "AMZN" }, "properties": [{ "id": "displayName", "value": "Amazon" }] },
+          { "matcher": { "id": "byName", "options": "BTC" }, "properties": [{ "id": "displayName", "value": "Bitcoin" }] },
+          { "matcher": { "id": "byName", "options": "ETH" }, "properties": [{ "id": "displayName", "value": "Ethereum" }] },
+          { "matcher": { "id": "byName", "options": "GOOGL" }, "properties": [{ "id": "displayName", "value": "Alphabet" }] },
+          { "matcher": { "id": "byName", "options": "META" }, "properties": [{ "id": "displayName", "value": "Meta" }] },
+          { "matcher": { "id": "byName", "options": "MSFT" }, "properties": [{ "id": "displayName", "value": "Microsoft" }] },
+          { "matcher": { "id": "byName", "options": "NFLX" }, "properties": [{ "id": "displayName", "value": "Netflix" }] },
+          { "matcher": { "id": "byName", "options": "NVDA" }, "properties": [{ "id": "displayName", "value": "NVIDIA" }] },
+          { "matcher": { "id": "byName", "options": "TSLA" }, "properties": [{ "id": "displayName", "value": "Tesla" }] }
+        ]
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "valueMode": "color"
+      }
+    },
+    {
+      "id": 5,
+      "type": "bargauge",
+      "title": "% Change — All Symbols",
+      "gridPos": { "x": 12, "y": 15, "w": 12, "h": 8 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "stock_change_percent",
+          "legendFormat": "{{symbol}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#f85149", "value": null },
+              { "color": "#d29922", "value": -0.5 },
+              { "color": "#3fb950", "value": 0.5 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "AAPL" }, "properties": [{ "id": "displayName", "value": "Apple" }] },
+          { "matcher": { "id": "byName", "options": "AMZN" }, "properties": [{ "id": "displayName", "value": "Amazon" }] },
+          { "matcher": { "id": "byName", "options": "BTC" }, "properties": [{ "id": "displayName", "value": "Bitcoin" }] },
+          { "matcher": { "id": "byName", "options": "ETH" }, "properties": [{ "id": "displayName", "value": "Ethereum" }] },
+          { "matcher": { "id": "byName", "options": "GOOGL" }, "properties": [{ "id": "displayName", "value": "Alphabet" }] },
+          { "matcher": { "id": "byName", "options": "META" }, "properties": [{ "id": "displayName", "value": "Meta" }] },
+          { "matcher": { "id": "byName", "options": "MSFT" }, "properties": [{ "id": "displayName", "value": "Microsoft" }] },
+          { "matcher": { "id": "byName", "options": "NFLX" }, "properties": [{ "id": "displayName", "value": "Netflix" }] },
+          { "matcher": { "id": "byName", "options": "NVDA" }, "properties": [{ "id": "displayName", "value": "NVIDIA" }] },
+          { "matcher": { "id": "byName", "options": "TSLA" }, "properties": [{ "id": "displayName", "value": "Tesla" }] }
+        ]
+      },
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient"
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Apple",
+      "gridPos": { "x": 0, "y": 23, "w": 4, "h": 3 },
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "stock_price{symbol=\"AAPL\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "color": { "mode": "thresholds" } } },
+      "options": { "reduceOptions": { "calcs": ["last"] }, "colorMode": "background" }
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Alphabet",
+      "gridPos": { "x": 4, "y": 23, "w": 4, "h": 3 },
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "stock_price{symbol=\"GOOGL\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "color": { "mode": "thresholds" } } },
+      "options": { "reduceOptions": { "calcs": ["last"] }, "colorMode": "background" }
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "Microsoft",
+      "gridPos": { "x": 8, "y": 23, "w": 4, "h": 3 },
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "stock_price{symbol=\"MSFT\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "color": { "mode": "thresholds" } } },
+      "options": { "reduceOptions": { "calcs": ["last"] }, "colorMode": "background" }
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "Tesla",
+      "gridPos": { "x": 12, "y": 23, "w": 4, "h": 3 },
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "stock_price{symbol=\"TSLA\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "color": { "mode": "thresholds" } } },
+      "options": { "reduceOptions": { "calcs": ["last"] }, "colorMode": "background" }
+    },
+    {
+      "id": 10,
+      "type": "stat",
+      "title": "NVIDIA",
+      "gridPos": { "x": 16, "y": 23, "w": 4, "h": 3 },
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "stock_price{symbol=\"NVDA\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "color": { "mode": "thresholds" } } },
+      "options": { "reduceOptions": { "calcs": ["last"] }, "colorMode": "background" }
+    },
+    {
+      "id": 11,
+      "type": "stat",
+      "title": "Bitcoin",
+      "gridPos": { "x": 20, "y": 23, "w": 4, "h": 3 },
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "stock_price{symbol=\"BTC\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "color": { "mode": "thresholds" } } },
+      "options": { "reduceOptions": { "calcs": ["last"] }, "colorMode": "background" }
+    },
+    {
+      "id": 12,
+      "type": "stat",
+      "title": "Ethereum",
+      "gridPos": { "x": 0, "y": 26, "w": 4, "h": 3 },
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "stock_price{symbol=\"ETH\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "color": { "mode": "thresholds" } } },
+      "options": { "reduceOptions": { "calcs": ["last"] }, "colorMode": "background" }
+    },
+    {
+      "id": 13,
+      "type": "stat",
+      "title": "Meta",
+      "gridPos": { "x": 4, "y": 26, "w": 4, "h": 3 },
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "stock_price{symbol=\"META\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "color": { "mode": "thresholds" } } },
+      "options": { "reduceOptions": { "calcs": ["last"] }, "colorMode": "background" }
+    },
+    {
+      "id": 14,
+      "type": "stat",
+      "title": "Amazon",
+      "gridPos": { "x": 8, "y": 26, "w": 4, "h": 3 },
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "stock_price{symbol=\"AMZN\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "color": { "mode": "thresholds" } } },
+      "options": { "reduceOptions": { "calcs": ["last"] }, "colorMode": "background" }
+    },
+    {
+      "id": 15,
+      "type": "stat",
+      "title": "Netflix",
+      "gridPos": { "x": 12, "y": 26, "w": 4, "h": 3 },
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "stock_price{symbol=\"NFLX\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD", "color": { "mode": "thresholds" } } },
+      "options": { "reduceOptions": { "calcs": ["last"] }, "colorMode": "background" }
+    },
+    {
+      "id": 16,
+      "type": "table",
+      "title": "All Symbols — Summary Table",
+      "gridPos": { "x": 0, "y": 29, "w": 24, "h": 7 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "stock_price",
+          "legendFormat": "{{symbol}}",
+          "instant": true,
+          "refId": "A"
+        },
+        {
+          "expr": "stock_change_percent",
+          "legendFormat": "{{symbol}}",
+          "instant": true,
+          "refId": "B"
+        },
+        {
+          "expr": "stock_volume",
+          "legendFormat": "{{symbol}}",
+          "instant": true,
+          "refId": "C"
+        },
+        {
+          "expr": "stock_moving_avg_5min",
+          "legendFormat": "{{symbol}}",
+          "instant": true,
+          "refId": "D"
+        }
+      ],
+      "options": { "sortBy": [{ "displayName": "Value #A", "desc": false }] },
+      "transformations": [
+        { "id": "merge", "options": {} },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "Value #A": "Price",
+              "Value #B": "Change %",
+              "Value #C": "Volume",
+              "Value #D": "MA 5min"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

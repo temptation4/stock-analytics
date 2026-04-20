@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: stock-analytics
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    streams:
+      application-id: stock-analytics-app
+      bootstrap-servers: localhost:9092
+      properties:
+        default.deserialization.exception.handler: org.apache.kafka.streams.errors.LogAndContinueExceptionHandler
+
+server:
+  port: 8070
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+logging:
+  level:
+    com.stocks: INFO
+    org.apache.kafka.streams: WARN
+    org.apache.kafka: WARN

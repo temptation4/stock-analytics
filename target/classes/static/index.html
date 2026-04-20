@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stock Analytics Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- SockJS + STOMP for WebSocket -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <!-- Chart.js financial plugin (candlestick) -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.1.1/dist/chartjs-chart-financial.min.js"></script>
+    <!-- Luxon adapter for Chart.js time scales -->
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1/dist/chartjs-adapter-luxon.umd.min.js"></script>
+</head>
+<body>
+    <!-- ── Header ──────────────────────────────────────────────── -->
+    <header>
+        <div class="header-inner">
+            <div class="logo">
+                <span class="logo-icon">📈</span>
+                <span class="logo-text">Kafka Streams <span class="accent">Live</span> Analytics</span>
+            </div>
+            <div class="header-right">
+                <span id="ws-status" class="badge badge-offline">● Connecting…</span>
+                <span class="time" id="clock"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ── Ticker Bar ──────────────────────────────────────────── -->
+    <div class="ticker-wrap">
+        <div class="ticker-label">LIVE</div>
+        <div class="ticker-content" id="ticker-content">
+            <!-- filled by JS -->
+        </div>
+    </div>
+
+    <!-- ── Main Layout ─────────────────────────────────────────── -->
+    <main>
+        <!-- Left: Symbol cards grid -->
+        <section class="cards-section">
+            <h2 class="section-title">All Symbols</h2>
+            <div class="cards-grid" id="cards-grid">
+                <!-- filled by JS -->
+            </div>
+        </section>
+
+        <!-- Right: Chart panel -->
+        <section class="chart-section">
+            <div class="chart-header">
+                <div>
+                    <h2 class="section-title" id="chart-title">Select a symbol</h2>
+                    <span class="chart-subtitle" id="chart-subtitle">Click any card to view candles</span>
+                </div>
+                <div class="ma-badge" id="ma-badge" style="display:none">
+                    MA(5m): <span id="ma-value">—</span>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="candleChart"></canvas>
+            </div>
+
+            <div class="chart-container volume-chart-container">
+                <canvas id="volumeChart"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <!-- ── Bottom: Gainers / Losers ───────────────────────────── -->
+    <div class="bottom-tables">
+        <div class="table-card">
+            <h3 class="table-title gainers-title">▲ Top Gainers</h3>
+            <table id="gainers-table">
+                <thead><tr><th>Symbol</th><th>Price</th><th>Change</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="table-card">
+            <h3 class="table-title losers-title">▼ Top Losers</h3>
+            <table id="losers-table">
+                <thead><tr><th>Symbol</th><th>Price</th><th>Change</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

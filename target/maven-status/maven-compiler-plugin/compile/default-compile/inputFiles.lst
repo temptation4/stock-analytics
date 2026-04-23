@@ -5,8 +5,8 @@
 /Users/neelu/stock-analytics/src/main/java/com/stocks/metrics/StockMetricsExporter.java
 /Users/neelu/stock-analytics/src/main/java/com/stocks/api/StockRestController.java
 /Users/neelu/stock-analytics/src/main/java/com/stocks/serde/JsonSerde.java
-/Users/neelu/stock-analytics/src/main/java/com/stocks/api/StockWebSocketController.java
 /Users/neelu/stock-analytics/src/main/java/com/stocks/StockAnalyticsApplication.java
+/Users/neelu/stock-analytics/src/main/java/com/stocks/producer/StockSummaryPublisher.java
 /Users/neelu/stock-analytics/src/main/java/com/stocks/producer/StockPriceProducer.java
 /Users/neelu/stock-analytics/src/main/java/com/stocks/streams/StockStreamsTopology.java
 /Users/neelu/stock-analytics/src/main/java/com/stocks/service/StockQueryService.java

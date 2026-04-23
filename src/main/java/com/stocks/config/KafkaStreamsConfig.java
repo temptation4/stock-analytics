@@ -7,10 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,25 +29,7 @@ public class KafkaStreamsConfig {
         // Commit every 1 second so state stores are visible quickly
         props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1000);
         // State store directory
-        props.put(StreamsConfig.STATE_DIR_CONFIG, "/tmp/kafka-streams/stock-analytics");
+        props.put(StreamsConfig.STATE_DIR_CONFIG, "/Users/neelu/Documents/stock-analytics-state-store");
         return new KafkaStreamsConfiguration(props);
-    }
-
-    @Configuration
-    @EnableWebSocketMessageBroker
-    static class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
-        @Override
-        public void configureMessageBroker(MessageBrokerRegistry config) {
-            config.enableSimpleBroker("/topic");
-            config.setApplicationDestinationPrefixes("/app");
-        }
-
-        @Override
-        public void registerStompEndpoints(StompEndpointRegistry registry) {
-            registry.addEndpoint("/ws")
-                    .setAllowedOriginPatterns("*")
-                    .withSockJS();
-        }
     }
 }

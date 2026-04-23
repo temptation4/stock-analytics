@@ -4,13 +4,12 @@ com/stocks/producer/StockPriceProducer.class
 com/stocks/streams/StockStreamsTopology$MovingAvgAccumulator.class
 com/stocks/model/OhlcvCandle.class
 com/stocks/service/StockQueryService.class
-com/stocks/config/KafkaStreamsConfig$WebSocketConfig.class
 com/stocks/model/StockTick.class
 com/stocks/serde/JsonSerde.class
 com/stocks/model/StockSummary.class
 com/stocks/model/StockTick$Builder.class
 com/stocks/StockAnalyticsApplication.class
+com/stocks/producer/StockSummaryPublisher.class
 com/stocks/api/StockRestController.class
 com/stocks/metrics/StockMetricsExporter.class
-com/stocks/api/StockWebSocketController.class
 com/stocks/config/KafkaStreamsConfig.class

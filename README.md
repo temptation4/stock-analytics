@@ -1,8 +1,8 @@
 # Real-time Stock Analytics with Kafka Streams
 
 A fully working Spring Boot application that simulates live stock price ticks,
-processes them through a Kafka Streams topology, and displays the results on a
-real-time HTML dashboard.
+processes them through a Kafka Streams topology, publishes derived summaries
+back to Kafka, and visualizes metrics through Prometheus and Grafana.
 
 ## Kafka Streams Concepts Demonstrated
 
@@ -19,29 +19,25 @@ real-time HTML dashboard.
 
 ```
 stock-analytics/
-├── docker-compose.yml          ← Kafka + Zookeeper + Kafka-UI
+├── docker-compose.yml          ← Kafka + Zookeeper + Prometheus + Grafana
 ├── pom.xml
 └── src/main/
     ├── java/com/stocks/
     │   ├── StockAnalyticsApplication.java
-    │   ├── config/KafkaStreamsConfig.java   ← Streams + WebSocket config
+    │   ├── config/KafkaStreamsConfig.java   ← Kafka Streams config
     │   ├── model/
     │   │   ├── StockTick.java               ← symbol, price, volume, timestamp
     │   │   ├── OhlcvCandle.java             ← open, high, low, close, volume
     │   │   └── StockSummary.java            ← REST DTO
     │   ├── serde/JsonSerde.java             ← generic JSON serde
-    │   ├── producer/StockPriceProducer.java ← @Scheduled, random walk
+    │   ├── producer/StockPriceProducer.java ← @Scheduled, random walk tick producer
+    │   ├── producer/StockSummaryPublisher.java ← @Scheduled summary publisher to Kafka
     │   ├── streams/StockStreamsTopology.java ← THE Kafka Streams topology
     │   ├── service/StockQueryService.java   ← Interactive Queries
     │   └── api/
-    │       ├── StockRestController.java     ← REST /api/stocks
-    │       └── StockWebSocketController.java← push /topic/stocks every 1s
+    │       └── StockRestController.java     ← REST /api/stocks
     └── resources/
-        ├── application.yml
-        └── static/                          ← Dashboard
-            ├── index.html
-            ├── app.js
-            └── style.css
+        └── application.yml
 ```
 
 ## Prerequisites
@@ -90,6 +86,14 @@ http://localhost:8085
 | `GET /api/stocks/{symbol}/candles?limit=30` | OHLCV candles from state store |
 | `GET /api/stocks/{symbol}/moving-avg` | 5-minute moving average |
 
+## Kafka Topics
+
+| Topic | Description |
+|---|---|
+| `stock-ticks` | Raw generated stock/crypto ticks |
+| `stock-ohlcv-1min` | Derived 1-minute candle output |
+| `stock-summaries` | Published summary snapshots for downstream Kafka consumers |
+
 ## Dashboard Screenshots
 
 ### Grafana Overview
@@ -115,6 +119,6 @@ StockPriceProducer (500ms)
             └── windowedBy(SlidingWindow5m).agg() → moving-avg-store (Window store)
 
 StockQueryService   → Interactive Queries → state stores
-StockWebSocketCtrl  → pushes summaries every 1s via /topic/stocks
-Dashboard (app.js)  → STOMP WebSocket + REST for candles
+StockSummaryPublisher → publishes summaries every 1s to stock-summaries
+StockMetricsExporter → exposes Prometheus metrics for Grafana
 ```

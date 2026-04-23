@@ -5,7 +5,7 @@
 `stock-analytics` is a Spring Boot application that demonstrates real-time stream
 processing with Apache Kafka Streams. It simulates stock and crypto price ticks,
 processes them into derived analytics, materializes queryable state stores, and
-exposes the results through REST APIs, WebSocket updates, Prometheus metrics,
+exposes the results through REST APIs, Kafka summary topics, Prometheus metrics,
 and Grafana dashboards.
 
 This project is designed as a learning and demo system rather than a
@@ -40,7 +40,7 @@ The system is composed of five logical layers:
    - `StockQueryService` reads Kafka Streams state stores via Interactive Queries.
 4. Delivery layer
    - REST endpoints expose current and historical views.
-   - WebSocket pushes summary updates to clients every second.
+   - A scheduled Kafka publisher emits derived summaries to a Kafka topic.
 5. Observability layer
    - Prometheus scrapes metrics from the app.
    - Grafana visualizes those metrics.
@@ -78,7 +78,7 @@ The core pipeline looks like this:
 6. `StockQueryService` reads those stores on demand.
 7. The app publishes results through:
    - REST endpoints under `/api/stocks`
-   - WebSocket topic `/topic/stocks`
+   - Kafka topic `stock-summaries`
    - Prometheus metrics at `/actuator/prometheus`
 
 ## Topics and State Stores
@@ -89,6 +89,8 @@ The core pipeline looks like this:
   - input topic containing raw generated ticks
 - `stock-ohlcv-1min`
   - output topic containing derived 1-minute candle data
+- `stock-summaries`
+  - output topic containing current summary snapshots for downstream consumers
 
 Kafka Streams also creates internal changelog and repartition topics as needed
 for stateful processing.
@@ -109,8 +111,8 @@ The topology materializes three named stores:
   - type: window store
   - purpose: rolling 5-minute moving average per symbol
 
-These stores are the backing data source for both the REST API and WebSocket
-summary updates.
+These stores are the backing data source for both the REST API and the Kafka
+summary publisher.
 
 ## Domain Model
 
@@ -210,7 +212,7 @@ The service protects callers from transient state-store issues by handling:
 - `InvalidStateStoreException`
 - `IllegalStateException`
 
-This prevents scheduled metric and WebSocket tasks from failing noisily while
+This prevents scheduled metric and summary-publisher tasks from failing noisily while
 the stream is starting, rebalancing, or recovering.
 
 ## API Design
@@ -239,18 +241,17 @@ Returns the current 5-minute moving average for one symbol.
 - API data is read from state stores, not by consuming Kafka again.
 - This keeps query latency low and avoids duplicating consumer logic.
 
-## WebSocket Design
+## Kafka Summary Publisher Design
 
-The application enables a simple STOMP message broker.
+`StockSummaryPublisher` runs on a schedule and queries the current summaries from
+Kafka Streams state stores. It publishes each summary to the `stock-summaries`
+topic using `KafkaTemplate`.
 
-- endpoint: `/ws`
-- topic for clients: `/topic/stocks`
+Why this exists:
 
-`StockWebSocketController` publishes summary snapshots every second by querying
-the same `StockQueryService` used by the REST API.
-
-This gives the browser near-real-time updates without polling every symbol
-individually.
+- downstream services can consume processed analytics directly from Kafka
+- the project no longer depends on a custom browser dashboard layer
+- the design stays consistent with a Kafka-centric architecture
 
 ## Metrics and Dashboard Design
 
@@ -317,7 +318,7 @@ Important runtime settings:
 1. Spring Boot starts the web app.
 2. Kafka Streams initializes and restores state if needed.
 3. Scheduled producer starts emitting ticks.
-4. Metrics exporter and WebSocket publisher start reading summaries.
+4. Metrics exporter and summary publisher start reading summaries.
 5. Prometheus scrapes the app.
 6. Grafana reads from Prometheus.
 
@@ -374,14 +375,14 @@ Its key idea is that a single stream-processing topology can power multiple
 consumers:
 
 - APIs
-- WebSocket clients
+- Kafka summary consumers
 - Prometheus metrics
 - Grafana dashboards
 
 The project is most useful as:
 
 - a Kafka Streams learning project
-- a real-time dashboard demo
+- a real-time Grafana analytics demo
 - a starter architecture for stream-derived queryable views
 
 It should be viewed as a well-instrumented demo platform today, and a base for

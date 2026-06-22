@@ -122,3 +122,6 @@ StockQueryService   → Interactive Queries → state stores
 StockSummaryPublisher → publishes summaries every 1s to stock-summaries
 StockMetricsExporter → exposes Prometheus metrics for Grafana
 ```
+
+## 👨‍💻 Author
+Neelu Sahai
